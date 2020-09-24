@@ -1,4 +1,4 @@
-aerich==0.2.2
+aerich==0.1.9
 aiomysql==0.0.20
 aiosqlite==0.15.0
 anyio==1.4.0
