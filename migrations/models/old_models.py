@@ -36,7 +36,9 @@ class Posts(models.Model):
         return f"{self.title}, {self.author_id} on {self.created_at}"
 
 
-Tortoise.init_models(["src.models.models"], "models")from tortoise import Model, fields
+Tortoise.init_models(["src.models.models"], "models")
+
+from tortoise import Model, fields
 
 MAX_VERSION_LENGTH = 255
 
