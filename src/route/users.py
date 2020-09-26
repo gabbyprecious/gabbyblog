@@ -37,9 +37,11 @@ async def get_user(user_id: int):
 
 @router.post(
     "/user/{user_id}", response_model=User_Pydantic, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
-async def update_user(user_id: int, user: User_Pydantic):
+async def update_user(user_id: int, user: UserIn_Pydantic):
     db_user = await User_Pydantic.from_queryset_single(Users.get(id=user_id))
     if db_user.author.id == current_user.id:
+        if user.password:
+            user.password = pwd_context.encrypt(user.password)
         await Users.filter(id=user_id).update(**user.dict(exclude_unset=True))
         return await User_Pydantic.from_queryset_single(Users.get(id=user_id))
     raise HTTPException(status_code=403, detail=f"No authorization to update")
