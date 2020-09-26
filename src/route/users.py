@@ -37,7 +37,7 @@ async def get_user(user_id: int):
 
 @router.post(
     "/user/{user_id}", response_model=User_Pydantic, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
-async def update_user(user_id: int, user: UserIn_Pydantic):
+async def update_user(user_id: int, user: UserIn_Pydantic, current_user: User_Pydantic = Depends(get_current_user)):
     db_user = await User_Pydantic.from_queryset_single(Users.get(id=user_id))
     if db_user.id == current_user.id:
         if user.password:
@@ -47,7 +47,7 @@ async def update_user(user_id: int, user: UserIn_Pydantic):
     raise HTTPException(status_code=403, detail=f"No authorization to update")
 
 @router.delete("/user/{user_id}", response_model=Status, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
-async def delete_user(user_id: int):
+async def delete_user(user_id: int, current_user: User_Pydantic = Depends(get_current_user)):
     db_user = await User_Pydantic.from_queryset_single(Users.get(id=user_id))
     if db_user.id == current_user.id:
         deleted_count = await Users.filter(id=user_id).delete()
