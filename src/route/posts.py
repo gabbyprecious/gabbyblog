@@ -24,7 +24,7 @@ async def update_post(post_id: int, post: PostIn_Pydantic, current_user: User_Py
     if db_post.author.id == current_user.id:
         await Posts.filter(id=post_id).update(**post.dict(exclude_unset=True))
         return await Post_Pydantic.from_queryset_single(Posts.get(id=post_id))
-    return "No I won't update"
+    raise HTTPException(status_code=403, detail=f"No authorization to update")
 
 @router.delete("/post/{post_id}", response_model=Status, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
 async def delete_post(post_id: int):
@@ -32,6 +32,6 @@ async def delete_post(post_id: int):
     if db_post.author.id == current_user.id:
         deleted_count = await Post.filter(id=post_id).delete()
         if not deleted_count:
-            raise HTTPException(status_code=404, detail=f"User {post_id} not found")
+            raise HTTPException(status_code=404, detail=f"Post {post_id} not found")
         return Status(message=f"Deleted post {post_id}")
-    return "No I won't delete"
+    raise HTTPException(status_code=403, detail=f"No authorization to delete")

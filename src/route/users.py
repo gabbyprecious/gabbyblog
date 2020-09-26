@@ -38,16 +38,21 @@ async def get_user(user_id: int):
 @router.post(
     "/user/{user_id}", response_model=User_Pydantic, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
 async def update_user(user_id: int, user: UserIn_Pydantic):
-    await Users.filter(id=user_id).update(**user.dict(exclude_unset=True))
-    return await User_Pydantic.from_queryset_single(Users.get(id=user_id))
-
+    db_user = await User_Pydantic.from_queryset_single(Users.get(id=user_id))
+    if db_user.author.id == current_user.id:
+        await Users.filter(id=user_id).update(**user.dict(exclude_unset=True))
+        return await User_Pydantic.from_queryset_single(Users.get(id=user_id))
+    raise HTTPException(status_code=403, detail=f"No authorization to update")
 
 @router.delete("/user/{user_id}", response_model=Status, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
 async def delete_user(user_id: int):
-    deleted_count = await Users.filter(id=user_id).delete()
-    if not deleted_count:
-        raise HTTPException(status_code=404, detail=f"User {user_id} not found")
-    return Status(message=f"Deleted user {user_id}")
+    db_user = await User_Pydantic.from_queryset_single(Users.get(id=user_id))
+    if db_user.author.id == current_user.id:
+        deleted_count = await Users.filter(id=user_id).delete()
+        if not deleted_count:
+            raise HTTPException(status_code=404, detail=f"User {user_id} not found")
+        return Status(message=f"Deleted user {user_id}")
+    raise HTTPException(status_code=403, detail=f"No authorization to delete")
 
 @router.post("/login", response_model=Token)
 async def login(user: HTTPBasicCredentials = Body(...)):

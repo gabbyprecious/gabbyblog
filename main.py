@@ -12,7 +12,7 @@ import logging
 from src.route import users, posts
 from src.database.config import TORTOISE_ORM
 
-app = FastAPI(title="Tortoise ORM FastAPI example")
+app = FastAPI(title="Simple Blog API Built with FastAPI and Tortoise-ORM")
 
 app.add_middleware(
     CORSMiddleware,
