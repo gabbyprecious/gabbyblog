@@ -39,7 +39,7 @@ async def get_user(user_id: int):
     "/user/{user_id}", response_model=User_Pydantic, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
 async def update_user(user_id: int, user: UserIn_Pydantic):
     db_user = await User_Pydantic.from_queryset_single(Users.get(id=user_id))
-    if db_user.author.id == current_user.id:
+    if db_user.id == current_user.id:
         if user.password:
             user.password = pwd_context.encrypt(user.password)
         await Users.filter(id=user_id).update(**user.dict(exclude_unset=True))
@@ -49,7 +49,7 @@ async def update_user(user_id: int, user: UserIn_Pydantic):
 @router.delete("/user/{user_id}", response_model=Status, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
 async def delete_user(user_id: int):
     db_user = await User_Pydantic.from_queryset_single(Users.get(id=user_id))
-    if db_user.author.id == current_user.id:
+    if db_user.id == current_user.id:
         deleted_count = await Users.filter(id=user_id).delete()
         if not deleted_count:
             raise HTTPException(status_code=404, detail=f"User {user_id} not found")
