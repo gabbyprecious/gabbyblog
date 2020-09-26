@@ -34,6 +34,3 @@ class Posts(models.Model):
 
     def __str__(self):
         return f"{self.title}, {self.author_id} on {self.created_at}"
-
-
-Tortoise.init_models(["src.models.models"], "models")
