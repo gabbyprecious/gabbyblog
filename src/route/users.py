@@ -22,13 +22,6 @@ async def create_user(user: UserIn_Pydantic):
     user_obj = await Users.create(**user.dict(exclude_unset=True))
     return await User_Pydantic.from_tortoise_orm(user_obj)
 
-
-@router.get(
-    "/user/{user_id}", response_model=User_Pydantic, responses={404: {"model": HTTPNotFoundError}}
-)
-async def get_user(user_id: int):
-    return await User_Pydantic.from_queryset_single(Users.get(id=user_id))
-
 @router.delete("/user/{user_id}", response_model=Status, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
 async def delete_user(user_id: int, current_user: User_Pydantic = Depends(get_current_user)):
     db_user = await User_Pydantic.from_queryset_single(Users.get(id=user_id))
