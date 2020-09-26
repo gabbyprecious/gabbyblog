@@ -23,7 +23,7 @@ async def get_users():
 
 @router.post("/register", response_model=User_Pydantic)
 async def create_user(user: UserIn_Pydantic):
-    user.password_hash = pwd_context.encrypt(user.password_hash)
+    user.password_hash = pwd_context.encrypt(user.password)
     user_obj = await Users.create(**user.dict(exclude_unset=True))
     return await User_Pydantic.from_tortoise_orm(user_obj)
 
