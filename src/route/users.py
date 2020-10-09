@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.security import HTTPBasicCredentials
+from fastapi.responses import JSONResponse
 from passlib.context import CryptContext
 from tortoise.contrib.fastapi import HTTPNotFoundError
 from datetime import datetime, timedelta
@@ -68,6 +69,15 @@ async def login(user: HTTPBasicCredentials = Body(...)):
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    token = jsonable_encoder(access_token)
+    response = {"message": "Come to the dark side, we have cookies"}
+    response.set_cookie(
+        "Authorization",
+            value=f"Bearer {token}",
+            httponly=True,
+            max_age=1800,
+            expires=1800,
     )
     return {"access_token": access_token, "token_type": "bearer"}
 

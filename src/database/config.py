@@ -1,5 +1,6 @@
 import os
 # {"default": "postgres://blogger:mypass@127.0.0.1:5432/blog_db"}
+# "default": os.environ.get('DATABASE_URL')
 
 TORTOISE_ORM = {
   "connections": {"default": os.environ.get('DATABASE_URL')
