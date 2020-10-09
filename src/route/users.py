@@ -55,4 +55,4 @@ async def login(user: HTTPBasicCredentials = Body(...)):
             max_age=1800,
             expires=1800,
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return response
