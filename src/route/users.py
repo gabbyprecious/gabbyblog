@@ -53,7 +53,6 @@ async def login(user: HTTPBasicCredentials = Body(...)):
     response.set_cookie(
         "Authorization",
             value=f"Bearer {token}",
-            domain="gabbyblog.herokuapp.com",
             httponly=True,
             max_age=1800,
             expires=1800,
