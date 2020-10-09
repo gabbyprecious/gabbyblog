@@ -56,6 +56,7 @@ async def login(user: HTTPBasicCredentials = Body(...)):
             httponly=True,
             max_age=1800,
             expires=1800,
-            samesite="none",
+            samesite="None",
+            secure=True
     )
     return response
