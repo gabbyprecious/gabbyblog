@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.security import HTTPBasicCredentials
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2, OAuth2PasswordBearer
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from passlib.context import CryptContext
@@ -35,7 +36,7 @@ async def delete_user(user_id: int, current_user: User_Pydantic = Depends(get_cu
     raise HTTPException(status_code=403, detail=f"No authorization to delete")
 
 @router.post("/login", response_model=Token)
-async def login(user: HTTPBasicCredentials = Body(...)):
+async def login(user: OAuth2PasswordRequestForm = Depends()):
     db_user = await validate_user(user)
     if not user:
         raise HTTPException(

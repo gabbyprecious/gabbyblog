@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 from typing import Optional
 from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2, OAuth2PasswordBearer
 from fastapi.security.utils import get_authorization_scheme_param
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from src.schema.token import Token, TokenData
