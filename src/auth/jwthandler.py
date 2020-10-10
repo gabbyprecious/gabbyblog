@@ -4,6 +4,9 @@ from passlib.context import CryptContext
 from typing import Optional
 from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2
+from fastapi.security.utils import get_authorization_scheme_param
+from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from src.schema.token import Token, TokenData
 from src.schema.user import User_Pydantic, UserIn_Pydantic, DB_User_Pydantic
 from src.models.models import Users
@@ -11,6 +14,37 @@ from src.models.models import Users
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+class OAuth2PasswordBearerCookie(OAuth2):
+    def __init__(
+        self,
+        tokenUrl: str,
+        scheme_name: str = None,
+        scopes: dict = None,
+        auto_error: bool = True,
+    ):
+        if not scopes:
+            scopes = {}
+        flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl, "scopes": scopes})
+        super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
+
+    async def __call__(self, request: Request) -> Optional[str]:
+        authorization: str = request.cookies.get("access_token")
+
+        scheme, param = get_authorization_scheme_param(authorization)
+        if not authorization or scheme.lower() != "bearer":
+            if self.auto_error:
+                raise HTTPException(
+                    status_code=HTTP_401_UNAUTHORIZED,
+                    detail="Not authenticated",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            else:
+                return None
+
+        return param
+
+security = OAuth2PasswordBearerCookie(tokenUrl="/login")
 
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 security = HTTPBearer()

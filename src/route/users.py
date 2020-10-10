@@ -48,7 +48,7 @@ async def login(user: HTTPBasicCredentials = Body(...)):
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     token = jsonable_encoder(access_token)
-    content = {"message": "Come to the dark side, we have cookies"}
+    content = {"message": "You've sucessfully logged in"}
     response = JSONResponse(content=content)
     response.set_cookie(
         "Authorization",
