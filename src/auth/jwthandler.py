@@ -35,7 +35,7 @@ class OAuth2PasswordBearerCookie(OAuth2):
         if not authorization or scheme.lower() != "bearer":
             if self.auto_error:
                 raise HTTPException(
-                    status_code=HTTP_401_UNAUTHORIZED,
+                    status_code=401,
                     detail="Not authenticated",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
