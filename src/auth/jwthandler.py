@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, Request
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from typing import Optional
