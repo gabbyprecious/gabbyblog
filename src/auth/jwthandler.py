@@ -46,8 +46,8 @@ class OAuth2PasswordBearerCookie(OAuth2):
 
 security = OAuth2PasswordBearerCookie(tokenUrl="/login")
 
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-security = HTTPBearer()
+# # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+# security = HTTPBearer()
 
 async def get_user(username: str):
     return await User_Pydantic.from_queryset_single(Users.get(username= username))
