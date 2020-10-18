@@ -1,13 +1,13 @@
 from fastapi import HTTPException, Depends, status
-from fastapi.security import HTTPBasicCredentials, HTTPBasic
+from fastapi.security import OAuth2PasswordRequestForm
+from src.auth.jwthandler import OAuth2PasswordBearerCookie
 from passlib.context import CryptContext
 
 from src.models.models import Users
 from src.schema.user import User_Pydantic, UserIn_Pydantic, DB_User_Pydantic
 
 
-
-security = HTTPBasic()
+security = OAuth2PasswordBearerCookie(tokenUrl="/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password, hashed_password):
@@ -21,7 +21,7 @@ async def get_user(username: str):
     return await DB_User_Pydantic.from_queryset_single(Users.get(username= username))
 
 
-async def validate_user(user: HTTPBasicCredentials = Depends(security)):
+async def validate_user(user: OAuth2PasswordRequestForm = Depends()):
     db_user = await get_user(user.username)
     if user is None:
         raise HTTPException(
