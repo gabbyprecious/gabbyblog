@@ -26,6 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+async def root():
+    return {"message": "Hello User, go to the /docs page"}
 
 app.include_router(users.router)
 app.include_router(posts.router)
