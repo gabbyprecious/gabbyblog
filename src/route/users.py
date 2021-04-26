@@ -12,11 +12,16 @@ from src.models.models import Users
 from src.schema.user import User_Pydantic, UserIn_Pydantic
 from src.schema.token import Token, TokenData, Status
 from src.auth.users import validate_user
-from src.auth.jwthandler import create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
+from src.auth.jwthandler import (
+    create_access_token,
+    get_current_user,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 router = APIRouter()
+
 
 @router.post("/register", response_model=User_Pydantic)
 async def create_user(user: UserIn_Pydantic):
@@ -24,8 +29,16 @@ async def create_user(user: UserIn_Pydantic):
     user_obj = await Users.create(**user.dict(exclude_unset=True))
     return await User_Pydantic.from_tortoise_orm(user_obj)
 
-@router.delete("/user/{user_id}", response_model=Status, responses={404: {"model": HTTPNotFoundError}}, dependencies=[Depends(get_current_user)])
-async def delete_user(user_id: int, current_user: User_Pydantic = Depends(get_current_user)):
+
+@router.delete(
+    "/user/{user_id}",
+    response_model=Status,
+    responses={404: {"model": HTTPNotFoundError}},
+    dependencies=[Depends(get_current_user)],
+)
+async def delete_user(
+    user_id: int, current_user: User_Pydantic = Depends(get_current_user)
+):
     db_user = await User_Pydantic.from_queryset_single(Users.get(id=user_id))
     if db_user.id == current_user.id:
         deleted_count = await Users.filter(id=user_id).delete()
@@ -33,6 +46,7 @@ async def delete_user(user_id: int, current_user: User_Pydantic = Depends(get_cu
             raise HTTPException(status_code=404, detail=f"User {user_id} not found")
         return Status(message=f"Deleted user {user_id}")
     raise HTTPException(status_code=403, detail=f"No authorization to delete")
+
 
 @router.post("/login")
 async def login(user: OAuth2PasswordRequestForm = Depends()):
@@ -52,11 +66,11 @@ async def login(user: OAuth2PasswordRequestForm = Depends()):
     response = JSONResponse(content=content)
     response.set_cookie(
         "Authorization",
-            value=f"Bearer {token}",
-            httponly=True,
-            max_age=1800,
-            expires=1800,
-            samesite="None",
-            secure= True
+        value=f"Bearer {token}",
+        httponly=True,
+        max_age=1800,
+        expires=1800,
+        samesite="None",
+        secure=True,
     )
     return response

@@ -15,6 +15,7 @@ SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+
 class OAuth2PasswordBearerCookie(OAuth2):
     def __init__(
         self,
@@ -44,13 +45,16 @@ class OAuth2PasswordBearerCookie(OAuth2):
 
         return param
 
+
 security = OAuth2PasswordBearerCookie(tokenUrl="/login")
 
 # # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 # security = HTTPBearer()
 
+
 async def get_user(username: str):
-    return await User_Pydantic.from_queryset_single(Users.get(username= username))
+    return await User_Pydantic.from_queryset_single(Users.get(username=username))
+
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()

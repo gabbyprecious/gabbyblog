@@ -28,7 +28,7 @@ class Posts(models.Model):
     id = fields.IntField(pk=True)
     title = fields.CharField(max_length=225)
     write_up = fields.TextField()
-    author = fields.ForeignKeyField('models.Users', related_name='post')
+    author = fields.ForeignKeyField("models.Users", related_name="post")
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
 

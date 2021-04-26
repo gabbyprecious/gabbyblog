@@ -10,13 +10,22 @@ from src.auth.jwthandler import get_current_user
 
 router = APIRouter()
 
-@router.get("/posts", response_model=List[Post_Pydantic], dependencies=[Depends(get_current_user)])
+
+@router.get(
+    "/posts",
+    response_model=List[Post_Pydantic],
+    dependencies=[Depends(get_current_user)],
+)
 async def get_posts():
     return await Post_Pydantic.from_queryset(Posts.all())
 
 
-@router.post("/post", response_model=Post_Pydantic, dependencies=[Depends(get_current_user)] )
-async def create_post(post: PostIn_Pydantic, current_user: User_Pydantic = Depends(get_current_user)):
+@router.post(
+    "/post", response_model=Post_Pydantic, dependencies=[Depends(get_current_user)]
+)
+async def create_post(
+    post: PostIn_Pydantic, current_user: User_Pydantic = Depends(get_current_user)
+):
     post_dict = post.dict(exclude_unset=True)
     post_dict["author_id"] = current_user.id
     post_obj = await Posts.create(**post_dict)
