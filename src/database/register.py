@@ -19,7 +19,7 @@ def register_tortoise(
 ) -> None:
     @app.on_event("startup")
     async def init_orm():
-        await Tortoise.init(config=config, config_file=config_file, db_url=db_url, modules=modules)
+        await Tortoise.init(config=config, config_file=config_file, db_url=db_url, modules=modules, ssl="require")
         logging.info('Tortoise-ORM started, %s, %s', Tortoise._connections, Tortoise.apps)
         if generate_schemas:
             logging.info('Tortoise-ORM generating schema.')
