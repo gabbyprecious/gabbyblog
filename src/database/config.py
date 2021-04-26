@@ -1,5 +1,5 @@
 import os
-
+import re
 # {"default": "postgres://blogger:mypass@127.0.0.1:5432/blog_db"}
 # "default": os.environ.get('DATABASE_URL')
 config = re.match("postgres://(.*?):(.*?)@(.*?)/(.*)", os.environ.get("DATABASE_URL"))
